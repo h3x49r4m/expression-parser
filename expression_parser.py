@@ -99,7 +99,7 @@ class ExpressionParser(ast.NodeVisitor):
             A tuple containing two lists: sorted operators and sorted datafields.
         """
         # 1. Clean up the string: remove comments and handle semicolons
-        cleaned_expr = expression_string.split('-->')[0]
+        cleaned_expr = expression_string.strip()
         statements = [stmt.strip() for stmt in cleaned_expr.split(';')]
         python_code = '\n'.join(filter(None, statements))
 
