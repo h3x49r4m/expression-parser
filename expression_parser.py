@@ -88,7 +88,7 @@ class ExpressionParser(ast.NodeVisitor):
         # Visit the right-hand side of the assignment
         self.generic_visit(node)
 
-    def parse(self, expression_string: str) -> tuple[list[str], list[str]]:
+    def parse(self, expression_string: str, separator=';') -> tuple[list[str], list[str]]:
         """
         Parses the expression string.
 
@@ -100,7 +100,7 @@ class ExpressionParser(ast.NodeVisitor):
         """
         # 1. Clean up the string: remove comments and handle semicolons
         cleaned_expr = expression_string.strip()
-        statements = [stmt.strip() for stmt in cleaned_expr.split(';')]
+        statements = [stmt.strip() for stmt in cleaned_expr.split(separator)]
         python_code = '\n'.join(filter(None, statements))
 
         # 2. Parse the string into an Abstract Syntax Tree
