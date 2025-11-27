@@ -13,7 +13,8 @@ class ExpressionValidator(ast.NodeVisitor):
     def __init__(self, operators, datafields_config):
         self.operators = operators
         self.datafield_types = {df['id']: df['type'] for df in datafields_config}
-        self.datafields = set(self.datafield_types.keys())
+        #self.datafields = set(self.datafield_types.keys())
+        self.datafields = [df['id'] for df in datafields_config]
         self.errors = []
         self.defined_variables = set()
         self.function_calls = set()
@@ -251,7 +252,8 @@ def main():
         "Invalid enum for quantile": "quantile(x, driver='abc')",
         "Invalid 'days' parameter (float)": "ts_mean(close, 20.5)",
         "Valid 'days' parameter (int)": "ts_mean(close, 20)",
-        "Valid group_mean parameter": "gmean = group_mean(x, close, industry); gmean = ts_delay(gmean, 20)"
+        "Valid group_mean parameter": "gmean = group_mean(x, close, industry); gmean = ts_delay(gmean, 20)",
+        "Invalid op name": "ts_tex(x, 1)"
     }
 
     for description, expression in test_expressions.items():
