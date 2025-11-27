@@ -50,7 +50,8 @@ Project Structure
 Usage
 -----
 
-### ExpressionParser
+ExpressionParser
+
 
 To use the parser, import the ``ExpressionParser`` class and call its ``parse`` method.
 
@@ -65,7 +66,8 @@ To use the parser, import the ``ExpressionParser`` class and call its ``parse`` 
     print(f"Operators: {operators}")
     print(f"Datafields: {datafields}")
 
-### ExpressionValidator
+
+ExpressionValidator
 
 The validator is designed to be run from the command line and uses the configuration files in the `_data/` directory.
 
