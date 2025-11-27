@@ -82,7 +82,11 @@ class ExpressionValidator(ast.NodeVisitor):
             is_literal = True
 
         if not is_literal:
-            return  # It's a variable or complex expression, can't validate value statically
+            # For positional arguments that are not literals, we can still do a basic check
+            if isinstance(value_node, ast.Name) and value_node.id in self.datafields:
+                 # It's a datafield, we assume it has the correct type at runtime
+                 pass
+            return 
 
         # Type validation
         expected_type = kw_def.get('type')
@@ -132,6 +136,7 @@ class ExpressionValidator(ast.NodeVisitor):
 
         func_name = node.func.id
         if func_name not in self.operators:
+            self.errors.append(f"Error at line {node.lineno}: Operator '{func_name}' is not defined or allowed.")
             self.generic_visit(node)
             return
         
@@ -145,6 +150,13 @@ class ExpressionValidator(ast.NodeVisitor):
             self.errors.append(f"Error at line {node.lineno}: '{func_name}' expects at least {min_args} positional arguments, but got {num_args}.")
         if num_args > max_args:
             self.errors.append(f"Error at line {node.lineno}: '{func_name}' expects at most {op_def.get('max_args')} positional arguments, but got {num_args}.")
+
+        # Positional argument type validation for 'd' parameters
+        for i, arg_node in enumerate(node.args):
+            # A simple heuristic to check if the argument is a 'days' parameter
+            if func_name.startswith('ts_') and len(node.args) > i and (op_def.get('min_args') > i) :
+                 if isinstance(arg_node, ast.Constant) and not isinstance(arg_node.value, int):
+                     self.errors.append(f"Error at line {node.lineno}: The 'days' parameter in '{func_name}' must be an integer, not a {type(arg_node.value).__name__}.")
 
         valid_kwarg_defs = op_def.get('kwargs', {})
         for keyword in node.keywords:
@@ -237,6 +249,9 @@ def main():
         "Invalid keyword arg value": "ts_returns(close, 10, mode=3)",
         "Invalid range for hump": "hump(x, hump=1.2)",
         "Invalid enum for quantile": "quantile(x, driver='abc')",
+        "Invalid 'days' parameter (float)": "ts_mean(close, 20.5)",
+        "Valid 'days' parameter (int)": "ts_mean(close, 20)",
+        "Valid group_mean parameter": "group_mean(x, close, industry)"
     }
 
     for description, expression in test_expressions.items():
