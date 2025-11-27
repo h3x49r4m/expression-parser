@@ -251,7 +251,7 @@ def main():
         "Invalid enum for quantile": "quantile(x, driver='abc')",
         "Invalid 'days' parameter (float)": "ts_mean(close, 20.5)",
         "Valid 'days' parameter (int)": "ts_mean(close, 20)",
-        "Valid group_mean parameter": "group_mean(x, close, industry)"
+        "Valid group_mean parameter": "gmean = group_mean(x, close, industry); gmean = ts_delay(gmean, 20)"
     }
 
     for description, expression in test_expressions.items():
